@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Smart Command</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/mainstyle.css">
+    <style>
+       
+        header {
+            overflow: hidden;
+            height: 60px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            padding-right: 20px;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            color: #db2303;
+
+        }
+
+        
+    </style>
+</head>
+
+<body>
+      
+    <div class="limiter">
+        <header style="z-index: 1;">
+            <div>
+                <a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
+                color: white;
+                text-decoration: none;
+                cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
+            </div>
+            <nav style="text-decoration:none;z-index: 2;">
+                <a class="nav-link" href="Index.html">Add device</a>
+                <a class="nav-link" href="Index.html">Remove device</a>
+                <a class="nav-link" href="Index.html">Unlockdoor</a>
+                <a class="nav-link" href="Login.html">Signout</a>
+            </nav>       
+        </header>
+     
+        <div class="container-login100" style="background-image: url('images/bg-01.jpg');z-index:-100;">
+            <div class="wrap-login100 p-t-30 p-b-50" style="margin-top: -50px;">
+                <span class="login100-form-title p-b-41" style="margin-bottom: 20px;margin-top: 30px;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+                    FACE DETECTION
+                </span>
+
+                <div class="login100-form validate-form p-b-33 p-t-5" style="opacity: 1;">
+                    <div class="container-login100-form-btn m-t-32">
+                        <div id="my_camera"></div> <br>
+                        <div class="container-login100-form-btn m-t-32" style="margin-top: -20px;">
+                            <input type=button id="btn" value="Take Picture" onClick="take_snapshot()"
+                                class="login100-form-btn" style="margin-bottom: 30px;">
+                            <input type=button value="Store" class="login100-form-btn" style="margin-bottom: 30px;">
+                        </div>
+                    </div>
+                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                <script type="text/javascript"
+                    src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.min.js"></script>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script language="JavaScript">
+    Webcam.set({
+        width: 300,
+        height: 400,
+        image_format: 'jpeg',
+        jpeg_quality: 1000
+    });
+    Webcam.attach('#my_camera');
+    console.log(Webcam);
+    function take_snapshot() {
+        if (document.getElementById("btn").value === "Take Picture") {
+            document.getElementById("btn").value = "Try Again";
+            Webcam.snap(function (data_uri) {
+                document.getElementById('my_camera').innerHTML =
+                    '<img style="margin-top:20px;width:300px;height:350px;border-radius:10px;" src="' + data_uri + '"/>';
+                imgArr.push(data_uri);
+            });
+        }
+        else if (document.getElementById("btn").value === "Try Again") {
+            document.getElementById("btn").value = "Take Picture";
+            document.getElementById('my_camera').innerHTML =
+                '';
+            Webcam.attach('#my_camera');
+        }
+
+    }    
+</script>
+
+<script language="JavaScript">
+    Webcam.set({
+        width: 300,
+        height: 400,
+        image_format: 'jpeg',
+        jpeg_quality: 1000
+    });
+    Webcam.attach('#my_camera');
+    console.log(Webcam);
+    let flag = 0;                       
+    function take_snapshot() {
+      
+        if (document.getElementById("btn").value === "Take Picture") {
+          document.getElementById("submit").style.display="block";
+            document.getElementById("btn").value = "Try Again";
+            Webcam.snap(function (data_uri) {
+                document.getElementById('my_camera').innerHTML =
+                    '<img style="margin-top:20px;width:300px;height:350px;border-radius:10px;" src="' + data_uri + '"/>';
+                imgArr.push(data_uri);
+            });
+        }
+        else if (document.getElementById("btn").value === "Try Again") {
+            document.getElementById("submit").style.display="none";
+            document.getElementById("btn").value = "Take Picture";
+            document.getElementById('my_camera').innerHTML =
+                '';
+            Webcam.attach('#my_camera');
+        }
+
+    }  
+    
+    document.getElementById("submit").onclick = function(){
+      $.ajax({
+      type: 'POST',
+      // make sure you respect the same origin policy with this url:
+      // http://en.wikipedia.org/wiki/Same_origin_policy
+      url: '',
+      data: { 
+          'img': document.getElementById('my_camera').innerHTML,           
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(msg){
+  
+          // Redirect here if msg is success
+      }
+  });
+}
+</script>

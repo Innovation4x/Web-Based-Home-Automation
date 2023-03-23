@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <title>Smart Code</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mainstyle.css' %}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <div class="limiter">
+        <header>
+            <div class="topnav">
+                <a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
+                color: white;
+                text-decoration: none;
+                cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
+            </div>
+        </header>
+        <div class="container-login100" style="background-image: url('/static/images/bg-01.jpg');">
+            <div class="wrap-login100 p-t-30 p-b-50">
+                <span class="login100-form-title p-b-41" style="margin-bottom: 40px;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+                    Smart Home Code
+                </span>
+
+                <div class="login100-form validate-form p-b-33 p-t-5">
+                    <div class="wrap-input100 validate-input">
+                        <span id="msg-display">
+                        </span>
+                    </div>
+                    <div class="wrap-input100 validate-input">
+                        <input class="input100" type="text" name="topic" placeholder="Smart Home Code " id="topic">
+                        <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                    </div>
+
+                    <div class="container-login100-form-btn m-t-32">
+                        <button class="login100-form-btn" style="margin-bottom: 30px;" id="add">
+                            JOIN
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<script>
+    msg_display = document.getElementById("msg-display");
+    add_btn = document.getElementById("add");
+    add_btn.onclick = function () {
+        this.innerHTML = "<div class='loader'></div>";
+        $.ajax({
+            type: 'POST',
+            url: "",
+            data:
+            {
+                topic: $("#topic").val(),
+                csrfmiddlewaretoken: $('{% csrf_token %}').val()
+
+            },
+            success: function (response) {
+                if (response.status == "success") {
+                    add_btn.innerHTML = "Joined"
+                    window.location.replace("./")
+                }
+                else {
+                    add_btn.innerHTML = "Try again"
+                    msg_display.innerHTML = '<span class="input100" id="error-msg" style="color:#db2303;padding-left:10%;padding-right:10%;text-align: center;">' + response.err_msg + '</span>'
+
+                }
+            },
+        })
+    }
+</script>
+
+</html>

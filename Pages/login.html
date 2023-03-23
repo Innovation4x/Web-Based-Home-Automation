@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+	<title>Login </title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/mainstyle.css' %}">
+</head>
+
+<body>
+
+
+	<div class="limiter">
+		<header>
+			<div class="topnav">
+				<a id="logo" href="" style="padding: 14px; font-size: 20px;        
+                color: white;
+                text-decoration: none;
+                cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
+			</div>
+		</header>
+
+
+		<div class="container-login100" style="background-image: url('/static/images/bg-01.jpg');">
+
+			{% if form.errors %}
+			{% for field in form %}
+			{% for error in field.errors %}
+			<div class="alert alert-error">
+				<strong>{{ error|escape }}</strong>
+			</div>
+			{% endfor %}
+			{% endfor %}
+			{% endif %}
+
+			<div class="wrap-login100 p-t-30 p-b-50">
+				<span class="login100-form-title p-b-41" style="margin-bottom: 40px;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+					Account Login
+				</span>
+
+			
+				<form class="login100-form validate-form p-b-33 p-t-5" class="login" method="POST" action="/accounts/login/">
+					{% csrf_token %}
+					<div class="wrap-input100 validate-input" data-validate="Enter username">
+						<input class="input100" type="text" name="login" placeholder="Username" autocomplete="username" maxlength="150" required id="id_login">
+							<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+
+					</div>
+
+					
+					<div class="wrap-input100 validate-input" data-validate="Enter password">
+					    <input class="input100" type="password" name="password" placeholder="Password" autocomplete="current-password" required id="id_password">
+						<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+					</div>
+					<div class="container-login100-form-btn m-t-32" style="padding: 10px;">
+						<input type="checkbox" name="remember" id="id_remember" value="Remember Me">
+						<label for="id_remember" style="font-size: 12px;">Remember me</label>
+						
+					</div>
+					<div class="container-login100-form-btn m-t-32">
+						<a href="#" style="margin-top: 20px;text-decoration: none;">Forgot Password?</a>
+					</div>
+					
+					<div class="container-login100-form-btn m-t-32">
+						<button class="login100-form-btn primaryAction" type="submit">
+							Login
+						</button>
+					</div>
+					<div class="container-login100-form-btn m-t-32">
+						<a href="/accounts/signup" style="margin-bottom: 30px;text-decoration: none;">Dont have Account?
+							Create
+							Account</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

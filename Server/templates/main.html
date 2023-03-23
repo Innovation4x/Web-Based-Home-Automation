@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <title>Smart Command</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mainstyle.css' %}">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="limiter">
+        <header>
+            <div>
+                <a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
+                color: white;
+                text-decoration: none;
+                cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
+            </div>
+            <nav style="text-decoration:none;">
+                <a class="nav-link" href="add_device.html">Add device</a>
+                <a class="nav-link" href="remove_device.html">Remove device</a>
+                <a class="nav-link" href="unlock_door.html">Unlockdoor</a>
+
+            </nav>
+            <form class="nav-link" style="display:flex;" method="post" action="/accounts/logout/">
+                {% csrf_token %}
+                <button class="nav-link" type="submit">Sign Out</button>
+            </form>
+        </header>
+        <div class="container-login100" style="background-image: url('static/images/bg-01.jpg');">
+            <div class="wrap-login100 p-t-30 p-b-50">
+                <span class="login100-form-title p-b-41" style="margin-bottom: 40px;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+                    YOUR COMMAND FOR SMART HOME
+                </span>
+
+                <div class="login100-form validate-form p-b-33 p-t-5">
+                    <div class="container-login100-form-btn m-t-32">
+                        <button id="start-btn" class="long-press-btn" title="Start">Start</button>
+                        <div class="wrap-input100 validate-input">
+                            <p class="input100" id="instructions">Press the Start button</p>
+                        </div>
+
+                        <button id="stop-btn" title="Stop">Stop</button>
+                    </div>
+
+                    <div class="wrap-input100 validate-input">
+                        <textarea class="input100" id="textbox" placeholder="Home Command "></textarea>
+                        <!-- <p class="input100" id="instructions">Press the Start button</p> -->
+                        <valid style="font-size: 15px;padding: 15px;color:#db2303;"></valid>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+
+    var recognition = new window.webkitSpeechRecognition();
+    var Textbox = $('#textbox');
+    var instructions = $('#instructions');
+    var Content = '';
+    recognition.continuous = true;
+
+    recognition.onresult = function (event) {
+
+        console.log(event.results)
+        var current = event.resultIndex;
+
+        var transcript = event.results[current][0].transcript;
+        var pvalid = document.getElementsByTagName('valid');
+        Content = transcript;
+        Textbox.val(Content);
+
+        function getVoices() {
+            let voices = speechSynthesis.getVoices();
+            if (!voices.length) {
+                let utterance = new SpeechSynthesisUtterance("");
+                speechSynthesis.speak(utterance);
+                voices = speechSynthesis.getVoices();
+            }
+            return voices;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: "home.html",
+            data:
+            {
+                message: transcript,
+                csrfmiddlewaretoken: $('{% csrf_token %}').val()
+
+            },
+
+            <!-- TODO text to Voice-->
+            success: function (response) {
+                console.log(response.status)
+                pvalid[0].innerText = response.status;
+
+                let textToSpeak = response.status;
+
+                let speakData = new SpeechSynthesisUtterance();
+                speakData.volume = 1; // From 0 to 1
+                speakData.rate = 1; // From 0.1 to 10
+                speakData.pitch = 2; // From 0 to 2
+                speakData.text = textToSpeak;
+                speakData.lang = 'en';
+                speakData.voice = getVoices()[1];
+
+                speechSynthesis.speak(speakData);
+
+
+            },
+        })
+    };
+
+    recognition.onstart = function () {
+        instructions.text('Voice recognition is ON.');
+    }
+
+    recognition.onspeechend = function () {
+        instructions.text('No activity.');
+    }
+
+    recognition.onerror = function (event) {
+        console.log(event.error)
+        if (event.error == 'no-speech') {
+            instructions.text('Try again.');
+        }
+    }
+
+    $('#start-btn').on('click', function (e) {
+        if (Content.length) {
+            Content += ' ';
+        }
+        document.getElementById("start-btn").innerText = "Listening..."
+        recognition.start();
+    });
+
+    Textbox.on('input', function () {
+        Content = $(this).val();
+    })
+
+
+    $('#stop-btn').on('click', function (e) {
+        recognition.abort();
+        document.getElementById("start-btn").innerText = "START"
+        instructions.text('press to record');
+    });
+
+</script>
+
+</html>

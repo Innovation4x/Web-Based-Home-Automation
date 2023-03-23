@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+
+	<title>Add Device</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/mainstyle.css' %}">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+	<div class="limiter">
+		<header>
+			<div>
+				<a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
+                color: white;
+                text-decoration: none;
+                cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
+			</div>
+			<nav  style="text-decoration:none;">				
+				<a class="nav-link" href="add_device.html">Add device</a>
+				<a class="nav-link" href="remove_device.html">Remove device</a>
+				<a class="nav-link" href="unlock_door.html">Unlockdoor</a>
+				
+			</nav>
+			<form class="nav-link" style="display:flex;" method="post" action="/accounts/logout/">
+                {% csrf_token %}                    
+                <button class="nav-link" type="submit">Sign Out</button>
+              </form>	
+		</header>
+		<div class="container-login100" style="background-image: url('/static/images/bg-01.jpg');">
+			<div class="wrap-login100 p-t-30 p-b-50">
+				<span class="login100-form-title p-b-41" style="margin-bottom: 40px;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+					ADD DEVICE
+				</span>
+				<div class="login100-form validate-form p-b-33 p-t-5">
+					<div class="wrap-input100 validate-input">
+						<span id="msg-display">
+							</span>
+					</div>
+                    <div class="wrap-input100 validate-input">
+						<input class="input100" type="text" id="deviceName" placeholder="Device Name" required>						
+					</div>		
+
+                    <div class="wrap-input100 validate-input">                        
+						<input class="input100" type="number" id="pinNum" placeholder="Pin Number" required>
+                        <valid style="font-size: 15px;padding: 15px;color:#db2303;"></valid>						
+					</div>
+					
+					<div class="container-login100-form-btn m-t-32">
+						<button class="login100-form-btn" style="margin-bottom: 30px;" id="add">
+							Add
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script>
+	msg_display=document.getElementById("msg-display");
+	add_btn = document.getElementById("add");
+	devNameField = document.getElementById("deviceName");
+	pinNumField = document.getElementById("pinNum");
+
+	devNameField.onchange = function(){
+		add_btn.innerHTML = "Add"
+		msg_display.innerHTML= ""
+	}
+
+	pinNumField.onchange = function(){
+		add_btn.innerHTML = "Add"
+		msg_display.innerHTML= ""
+	}
+	add_btn.onclick = function(){
+		this.innerHTML = "<div class='loader'></div>";
+			$.ajax({
+				type: 'POST',
+				url: "add_device.html",
+				data : 
+					{
+						deviceName: $("#deviceName").val(),
+						pinNum: $("#pinNum").val(),
+						csrfmiddlewaretoken: $('{% csrf_token %}').val()
+	
+					},
+				success: function (response) {
+					if(response.status == "success"){
+						add_btn.innerHTML = "Addeed"
+						window.location.replace("./")
+					}
+					else{
+						add_btn.innerHTML = "Failed"
+						msg_display.innerHTML='<span class="input100" id="error-msg" style="color:#db2303;padding-left:10%;padding-right:10%;text-align: center;">'+ response.err_msg+'</span>'
+						
+					}
+				},
+			  })		
+	}
+	
+     var pinno=document.getElementById('pinnum');
+     var pvalid=document.getElementsByTagName('valid');
+     pinno.onkeyup=function()
+    {
+       const validpin=/^\b([1-9]|1[0-5])\b$/;              
+       
+       if(validpin.test(pinno.value))
+       {
+        pvalid[0].innerText="";
+       }
+       else
+       {
+        pvalid[0].innerText="Should only be from 1-15";            
+       }
+    }
+</script>

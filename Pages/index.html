@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Smart Command</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="css/mainstyle.css">
+</head>
+<body>
+	<div class="limiter">
+		<header>
+			<div class="topnav">
+				<a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
+                color: white;
+                text-decoration: none;
+                cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
+			</div>
+		</header>
+		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
+			<div class="wrap-login100 p-t-30 p-b-50" style="margin-top: -50px;">
+				<span class="login100-form-title p-b-41" style="margin-bottom: 40px;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+					 YOUR COMMAND FOR SMART HOME
+				</span>
+
+                <div class="login100-form validate-form p-b-33 p-t-5">
+                    <div class="container-login100-form-btn m-t-32">                                
+                        <button id="start-btn" class="long-press-btn"  title="Start">Start</button>
+                        <div class="wrap-input100 validate-input">
+                            <p class="input100"id="instructions">Press the Start button</p>
+                        </div> 
+                       
+                        <!-- <button  id="stop-btn" title="Stop">Stop</button> -->
+                    </div>
+                   
+                    <div class="wrap-input100 validate-input">
+                        <!-- <input class="input100" style="padding-right: 20px;" type="text" id="textbox"  name="code" placeholder="Home Command" required> -->
+                        <textarea class="input100" id="textbox" style="padding-right: 20px;" placeholder="Home Command "></textarea>
+                    </div> 
+                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                <!-- <script src="script.js"></script>			 -->
+			</div>
+		</div>        
+	</div>
+</body>
+</html>
+<script>
+  var SpeechRecognition = window.webkitSpeechRecognition;
+  
+  var recognition = new SpeechRecognition();
+  
+  var Textbox = $('#textbox');
+  var instructions = $('#instructions');
+  
+  var Content = '';
+  
+  recognition.continuous = true;
+  
+  recognition.onresult = function(event) {
+  
+    var current = event.resultIndex;
+  
+    var transcript = event.results[current][0].transcript;
+   
+      Content += transcript;
+      Textbox.val(Content);
+    
+  };
+  
+  recognition.onstart = function() { 
+    instructions.text('Voice recognition is ON.');
+  }
+  
+  recognition.onspeechend = function() {
+    instructions.text('No activity.');
+  }
+  
+  recognition.onerror = function(event) {
+    console.log("ERROR")
+    if(event.error == 'no-speech') {
+      instructions.text('Try again.');  
+    }
+  }
+ 
+  Textbox.on('input', function() {
+    Content = $(this).val();
+  })
+  
+
+document.getElementById("start-btn").onmousedown = function() {mouseDown()};
+document.getElementById("start-btn").onmouseup = function() {mouseUp()};
+
+function mouseDown() {
+    document.getElementById("start-btn").innerHTML="stop";
+    if (Content.length) {
+      Content += ' ';
+    }
+    recognition.start();
+ 
+}
+
+function mouseUp() {
+    document.getElementById("start-btn").innerHTML="start";
+    recognition.abort();
+    instructions.text('press to record'); 
+
+}
+  
+</script>

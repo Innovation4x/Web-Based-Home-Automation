@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <title>Smart Command</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mainstyle.css' %}">
+
+</head>
+
+<body>
+    <div class="limiter">
+        <header>
+            <div>
+                <a id="logo" href="Index.html" style="padding: 14px; font-size: 20px;        
+                color: white;
+                text-decoration: none;
+                cursor: pointer;">SMART<span style="color: #db2303;">HOME</span></a>
+            </div>
+            <nav style="text-decoration:none;">
+
+                <a class="nav-link" href="add_device.html">Add device</a>
+                <a class="nav-link" href="remove_device.html">Remove device</a>
+                <a class="nav-link" href="unlock_door.html">Unlockdoor</a>
+
+            </nav>
+            <form class="nav-link" style="display:flex;" method="post" action="/accounts/logout/">
+                {% csrf_token %}
+                <button class="nav-link" type="submit">Sign Out</button>
+            </form>
+        </header>
+        <div class="container-login100" style="background-image: url('/static/images/bg-01.jpg');">
+            <div class="wrap-login100 p-t-30 p-b-50" style="margin-top: -50px;">
+                <span class="login100-form-title p-b-41" style="margin-bottom: 20px;margin-top: 30px;
+                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+                    FACE DETECTION
+                </span>
+                {% csrf_token %}
+
+                <div class="login100-form validate-form p-b-33 p-t-5" style="opacity: 1;">
+                    <div class="container-login100-form-btn m-t-32">
+                        <div id="my_camera"></div> <br>
+                        <div class="container-login100-form-btn m-t-32" style="margin-top: -20px;">
+                            <input type=button id="btn" value="Take Picture" onClick="take_snapshot()"
+                                class="login100-form-btn" style="margin-bottom: 30px;">
+                            <input type=button id="submit" value="Unlock Door" style="display: none;"
+                                class="login100-form-btn" style="margin-bottom: 30px;">
+
+                        </div>
+                        <span id="ack-msg" style="font-size: 15px;padding: 15px;color:#db2303;"></span>
+                    </div>
+                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                <script type="text/javascript"
+                    src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.min.js"></script>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script language="JavaScript">
+    Webcam.set({
+        width: 300,
+        height: 400,
+        image_format: 'jpeg',
+        jpeg_quality: 1000
+    });
+    Webcam.attach('#my_camera');
+    console.log(Webcam);
+    let flag = 0;
+    function take_snapshot() {
+
+        if (document.getElementById("btn").value === "Take Picture") {
+            document.getElementById("submit").style.display = "block";
+            document.getElementById("btn").value = "Try Again";
+            Webcam.snap(function (data_uri) {
+                document.getElementById('my_camera').innerHTML =
+                    '<img style="margin-top:20px;width:300px;height:350px;border-radius:10px;" src="' + data_uri + '"/>';
+                imgArr.push(data_uri);
+            });
+        }
+        else if (document.getElementById("btn").value === "Try Again") {
+            document.getElementById("submit").style.display = "none";
+            document.getElementById("btn").value = "Take Picture";
+            document.getElementById("ack-msg").innerText = '';
+            document.getElementById('my_camera').innerHTML =
+                '';
+            Webcam.attach('#my_camera');
+        }
+
+    }
+   
+
+    document.getElementById("submit").onclick = function () {
+        console.log("jk");
+        $.ajax({
+            type: 'POST',
+            // make sure you respect the same origin policy with this url:
+            // http://en.wikipedia.org/wiki/Same_origin_policy
+            url: '',
+            data: {
+                'img': document.getElementById('my_camera').innerHTML,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (msg) {
+                var status = msg.status;
+                document.getElementById("ack-msg").innerText = status;
+                
+
+            }
+        });
+    }
+</script>
